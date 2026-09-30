@@ -225,6 +225,10 @@ function checkPairResolution() {
 
   if (leftPairId === rightPairId) {
     // ¡Acierto!
+    if (typeof Store !== 'undefined' && Store.record) {
+      Store.record(matchSelectedLeft.textContent.trim(), true);
+      Store.record(matchSelectedRight.textContent.trim(), true);
+    }
     SoundFX.match();
     streak++;
     score += 40 + Math.min(streak, 5) * 10;
@@ -245,6 +249,10 @@ function checkPairResolution() {
     }
   } else {
     // Error
+    if (typeof Store !== 'undefined' && Store.record) {
+      Store.record(matchSelectedLeft.textContent.trim(), false);
+      Store.record(matchSelectedRight.textContent.trim(), false);
+    }
     SoundFX.wrong();
     streak = 0;
     matchMistakesInRound++;

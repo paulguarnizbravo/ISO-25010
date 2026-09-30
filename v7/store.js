@@ -101,16 +101,58 @@ const Store = (() => {
       }
     },
 
+    // Función de normalización para asegurar coincidencia sin importar mayúsculas o tildes
+    _norm(str) {
+      return String(str || '')
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]/g, '');
+    },
+
     // Registro de respuestas para una subcaracterística o característica
     record(name, isCorrect) {
       if (!name) return;
-      if (!state.stats[name]) {
-        state.stats[name] = { recent: [] };
+      const val = isCorrect ? 1 : 0;
+      const rawKey = String(name).trim();
+      const normKey = this._norm(rawKey);
+
+      // Guardar en clave original y normalizada
+      if (!state.stats[normKey]) {
+        state.stats[normKey] = { recent: [], name: rawKey };
       }
-      const s = state.stats[name];
-      s.recent.push(isCorrect ? 1 : 0);
-      if (s.recent.length > 8) s.recent.shift();
+      state.stats[normKey].recent.push(val);
+      if (state.stats[normKey].recent.length > 10) state.stats[normKey].recent.shift();
+
+      // Si name es una subcaracterística, registrar también para su característica padre
+      if (typeof characteristics !== 'undefined' && Array.isArray(characteristics)) {
+        for (const c of characteristics) {
+          const cNorm = this._norm(c.name);
+          if (cNorm !== normKey && c.subcategories) {
+            const isSub = c.subcategories.some(s => this._norm(s.name) === normKey || (s.alias && this._norm(s.alias) === normKey));
+            if (isSub) {
+              if (!state.stats[cNorm]) {
+                state.stats[cNorm] = { recent: [], name: c.name };
+              }
+              state.stats[cNorm].recent.push(val);
+              if (state.stats[cNorm].recent.length > 12) state.stats[cNorm].recent.shift();
+              break;
+            }
+          }
+        }
+      }
+
       save();
+    },
+
+    // Registrar progreso por estudio / exploración de fichas
+    recordStudy(name) {
+      if (!name) return;
+      const normKey = this._norm(name);
+      if (!state.stats[normKey] || !state.stats[normKey].recent.length) {
+        state.stats[normKey] = { recent: [1], name: String(name).trim() };
+        save();
+      }
     },
 
     // Agregar o quitar de la lista de errores para repaso espaciado
@@ -132,10 +174,45 @@ const Store = (() => {
     // Calcular el porcentaje de dominio para una o varias características/subcaracterísticas
     mastery(names) {
       if (!Array.isArray(names) || names.length === 0) return null;
-      const recentAnswers = names.flatMap(n => (state.stats[n] || { recent: [] }).recent);
+      const targetNorms = names.map(n => this._norm(n));
+      const recentAnswers = [];
+
+      for (const [key, val] of Object.entries(state.stats)) {
+        if (!val || !Array.isArray(val.recent) || !val.recent.length) continue;
+        const kNorm = this._norm(key);
+        if (targetNorms.includes(kNorm)) {
+          recentAnswers.push(...val.recent);
+        }
+      }
+
       if (!recentAnswers.length) return null;
       const total = recentAnswers.reduce((a, b) => a + b, 0);
       return Math.round((total / recentAnswers.length) * 100);
+    },
+
+    // Cargar progreso de prueba realista para las 8 características
+    seedDemoProgress() {
+      const demoData = [
+        { name: "Adecuación funcional", recent: [1, 1, 1, 0, 1] },       // 80%
+        { name: "Eficiencia de desempeño", recent: [1, 1, 0, 1] },     // 75%
+        { name: "Compatibilidad", recent: [1, 0, 1] },                  // 67%
+        { name: "Usabilidad", recent: [1, 1, 1, 1, 0] },                // 80%
+        { name: "Fiabilidad", recent: [1, 1, 1, 0] },                   // 75%
+        { name: "Seguridad", recent: [1, 1, 1, 1] },                    // 100%
+        { name: "Mantenibilidad", recent: [1, 0, 1, 0, 1] },            // 60%
+        { name: "Portabilidad", recent: [1, 1, 1, 0] }                  // 75%
+      ];
+
+      demoData.forEach(d => {
+        const normKey = this._norm(d.name);
+        state.stats[normKey] = { recent: [...d.recent], name: d.name };
+      });
+
+      state.profile.totalScore = Math.max(state.profile.totalScore || 0, 650);
+      state.profile.bestScore = Math.max(state.profile.bestScore || 0, 650);
+      state.profile.streak = Math.max(state.profile.streak || 0, 4);
+      state.profile.casesSolved = Math.max(state.profile.casesSolved || 0, 8);
+      save();
     },
 
     // Incrementar estadísticas generales

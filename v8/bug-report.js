@@ -144,6 +144,11 @@ function submitBugReport(e) {
   const template = bugReportTemplates[currentBugTemplateIdx] || bugReportTemplates[0];
   const model = template.modelAnswer;
 
+  if (typeof Store !== 'undefined' && Store.record) {
+    Store.record(model.characteristic, charVal === model.characteristic);
+    Store.record(model.subcharacteristic, subVal === model.subcharacteristic);
+  }
+
   Store.incrementReportsCreated();
   Store.addScore(100);
   Store.unlockBadge("qa_auditor");

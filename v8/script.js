@@ -238,6 +238,10 @@ function showCharacteristic(id) {
   const ch = characteristics.find(item => item.id === id);
   if (!ch) return;
 
+  if (typeof Store !== 'undefined' && Store.recordStudy) {
+    Store.recordStudy(ch.name);
+  }
+
   const content = document.getElementById("detailContent");
   const mainQ = ch.mainQuestion || (`👉 ${ch.question}`);
   const conceptText = ch.coreConcept || ch.simpleConcept || ch.description;
@@ -640,6 +644,46 @@ function startReview() {
   loadQuestion();
 }
 
+function loadDemoProgress() {
+  Store.seedDemoProgress();
+  updateHeader();
+  renderProgress();
+  if (typeof SoundFX !== 'undefined') SoundFX.badge();
+  if (typeof checkAllBadges === 'function') checkAllBadges();
+}
+
+function startCharacteristicQuiz(charId) {
+  const ch = characteristics.find(c => c.id === charId);
+  if (!ch) return;
+
+  const charNorm = Store._norm(ch.name);
+  const subNorms = ch.subcategories ? ch.subcategories.map(s => Store._norm(s.name)) : [];
+  const targetNorms = [charNorm, ...subNorms];
+
+  // Filtrar preguntas relacionadas con esta característica o sus subcaracterísticas
+  const pool = questions.filter(q => {
+    const corNorm = Store._norm(q.correct);
+    return targetNorms.includes(corNorm) || (q.explanation && Store._norm(q.explanation).includes(charNorm));
+  });
+
+  if (pool.length > 0) {
+    currentMode = "characteristic";
+    score = 0;
+    correctCount = 0;
+    wrongCount = 0;
+    streak = 0;
+    currentQuestion = 0;
+    lives = 3;
+    timeLeft = 20;
+    currentQuestions = shuffle([...pool]).slice(0, 4);
+    showSection("gameScreen");
+    setupGame();
+    loadQuestion();
+  } else {
+    showCharacteristic(charId);
+  }
+}
+
 function renderProgress() {
   const home = document.getElementById("homeScreen");
   let p = document.getElementById("progressPanel");
@@ -663,25 +707,36 @@ function renderProgress() {
         <button class="primary-btn sm-btn" ${wrongCountTotal ? '' : 'disabled'}>Repasar →</button>
       </div>
 
-      <h3 class="section-title" style="margin-top:22px;">📊 Tu Dominio por Característica</h3>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:22px; flex-wrap:wrap; gap:10px;">
+        <h3 class="section-title" style="margin:0;">📊 Tu Dominio por Característica</h3>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button class="secondary-btn sm-btn" onclick="startGame('exam')" title="Evaluar tus conocimientos en un test integral">🎯 Test Integral</button>
+          <button class="secondary-btn sm-btn" onclick="loadDemoProgress()" title="Cargar datos de ejemplo para visualizar el progreso y certificado">⚡ Cargar Progreso Demo</button>
+        </div>
+      </div>
+
       <div class="mastery-grid">
         ${characteristics.map(c => {
           const m = Store.mastery([c.name, ...c.subcategories.map(s => s.name)]);
           const lvl = m === null ? '' : m >= 70 ? 'hi' : m >= 40 ? 'mid' : 'lo';
-          const label = m === null ? 'Sin datos' : `${m}%`;
+          const label = m === null ? '0% (Evaluar)' : `${m}%`;
+          const barWidth = m === null ? 0 : m;
           return `
-            <button class="m-row" onclick="showCharacteristic(${c.id})">
+            <button class="m-row" onclick="startCharacteristicQuiz(${c.id})" title="Clic para evaluar o practicar ${c.name}">
               <span>${c.icon} ${c.name}</span>
-              <span class="m-bar"><i class="${lvl}" style="width:${m ?? 0}%"></i></span>
-              <b>${label}</b>
+              <span class="m-bar"><i class="${lvl}" style="width:${barWidth}%"></i></span>
+              <b style="${m === null ? 'color:var(--primary); font-size:0.85rem;' : ''}">${label}</b>
             </button>
           `;
         }).join('')}
       </div>
 
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:12px; flex-wrap:wrap; gap:10px;">
         <button class="link-btn" onclick="resetAllProgress()">Borrar mi progreso</button>
-        <button class="link-btn" onclick="showSection('certificateScreen')">📜 Ver mi Certificado →</button>
+        <div style="display:flex; gap:12px;">
+          <button class="link-btn" onclick="loadDemoProgress()">⚡ Cargar progreso demo</button>
+          <button class="link-btn" onclick="showSection('certificateScreen')">📜 Ver mi Certificado →</button>
+        </div>
       </div>
     </div>
   `;
