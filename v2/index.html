@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>ISO 25010 Challenge</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="extras.css">
+</head>
+
+<body>
+
+    <!-- ============================= -->
+    <!-- HEADER -->
+    <!-- ============================= -->
+
+    <header class="header">
+
+        <div class="logo">
+            <div class="logo-icon">ISO</div>
+
+            <div>
+                <h1>ISO 25010</h1>
+                <span>Challenge</span>
+            </div>
+        </div>
+
+        <div class="player-stats">
+
+            <div class="stat">
+                <span>⭐</span>
+                <strong id="score">0</strong>
+                <small>Puntos</small>
+            </div>
+
+            <div class="stat">
+                <span>🔥</span>
+                <strong id="streak">0</strong>
+                <small>Racha</small>
+            </div>
+
+            <div class="stat">
+                <span>🏆</span>
+                <strong id="bestScore">0</strong>
+                <small>Récord</small>
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <!-- ============================= -->
+    <!-- CONTENEDOR PRINCIPAL -->
+    <!-- ============================= -->
+
+    <main class="container">
+
+        <!-- ============================= -->
+        <!-- PANTALLA PRINCIPAL -->
+        <!-- ============================= -->
+
+        <section id="homeScreen" class="screen active">
+
+            <div class="hero">
+
+                <div class="hero-content">
+
+                    <span class="badge">🎮 JUEGO EDUCATIVO</span>
+
+                    <h2>
+                        Aprende
+                        <span>ISO/IEC 25010</span>
+                        jugando
+                    </h2>
+
+                    <p>
+                        Aprende las 8 características y sus subcaracterísticas
+                        mediante preguntas, casos empresariales y retos.
+                    </p>
+
+                    <button class="primary-btn" onclick="showSection('learnScreen')">
+                        📚 Empezar a aprender
+                    </button>
+
+                </div>
+
+                <div class="hero-graphic">
+                    <div class="iso-circle">
+                        <span>ISO</span>
+                        <strong>25010</strong>
+                    </div>
+                </div>
+
+            </div>
+
+
+            <h3 class="section-title">🎮 Modos de juego</h3>
+
+            <div class="mode-grid">
+
+                <div class="mode-card" onclick="startDetective()">
+                    <div class="mode-icon amber">🕵️</div>
+                    <h3>Detective de defectos</h3>
+                    <p>Subraya la evidencia, clasifica el defecto y decide su gravedad.</p>
+                    <button>Investigar →</button>
+                </div>
+
+                <div class="mode-card" onclick="startGame('characteristic')">
+                    <div class="mode-icon blue">🎯</div>
+                    <h3>¿Qué característica es?</h3>
+                    <p>Identifica la característica ISO 25010 a partir de una situación.</p>
+                    <button>Jugar →</button>
+                </div>
+
+                <div class="mode-card" onclick="startGame('subcategory')">
+                    <div class="mode-icon purple">🔎</div>
+                    <h3>¿Qué subcaracterística es?</h3>
+                    <p>Descubre la subcaracterística correcta.</p>
+                    <button>Jugar →</button>
+                </div>
+
+                <div class="mode-card" onclick="startGame('cases')">
+                    <div class="mode-icon green">🏢</div>
+                    <h3>Casos prácticos</h3>
+                    <p>Analiza situaciones de empresas y sistemas reales.</p>
+                    <button>Jugar →</button>
+                </div>
+
+                <div class="mode-card" onclick="startGame('quick')">
+                    <div class="mode-icon orange">⚡</div>
+                    <h3>Reto rápido</h3>
+                    <p>Responde preguntas antes de que se termine el tiempo.</p>
+                    <button>Jugar →</button>
+                </div>
+
+                <div class="mode-card" onclick="startGame('exam')">
+                    <div class="mode-icon red">📝</div>
+                    <h3>Examen final</h3>
+                    <p>Demuestra todo lo que aprendiste.</p>
+                    <button>Comenzar →</button>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ============================= -->
+        <!-- APRENDER -->
+        <!-- ============================= -->
+
+        <section id="learnScreen" class="screen">
+
+            <button class="back-btn" onclick="showSection('homeScreen')">
+                ← Volver
+            </button>
+
+            <div class="section-header">
+
+                <span class="badge">📚 MODO APRENDER</span>
+
+                <h2>
+                    Las 8 características
+                    <span>ISO/IEC 25010</span>
+                </h2>
+
+                <p>
+                    Selecciona una característica para conocer sus
+                    subcaracterísticas y ejemplos.
+                </p>
+
+            </div>
+
+            <div id="characteristicsGrid" class="characteristics-grid"></div>
+
+        </section>
+
+
+        <!-- ============================= -->
+        <!-- DETALLE CARACTERÍSTICA -->
+        <!-- ============================= -->
+
+        <section id="detailScreen" class="screen">
+
+            <button class="back-btn" onclick="showSection('learnScreen')">
+                ← Volver a características
+            </button>
+
+            <div id="detailContent"></div>
+
+        </section>
+
+
+        <!-- ============================= -->
+        <!-- JUEGO -->
+        <!-- ============================= -->
+
+        <section id="gameScreen" class="screen">
+
+            <div class="game-top">
+
+                <button class="back-btn" onclick="confirmExit()">
+                    ← Salir
+                </button>
+
+                <div class="game-info">
+
+                    <span id="questionCounter">
+                        Pregunta 1 / 10
+                    </span>
+
+                    <div class="lives" id="lives">
+                        ❤️ ❤️ ❤️
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="progress-container">
+
+                <div
+                    id="progressBar"
+                    class="progress-bar">
+                </div>
+
+            </div>
+
+
+            <div id="timerBox" class="timer-box hidden">
+                ⏱️ <span id="timer">20</span>s
+            </div>
+
+
+            <div class="question-card">
+
+                <div class="question-type" id="questionType">
+                    PREGUNTA
+                </div>
+
+                <h2 id="questionText">
+                    Pregunta
+                </h2>
+
+                <div id="questionDescription"
+                     class="question-description">
+                </div>
+
+                <div id="answers"
+                     class="answers">
+                </div>
+
+                <div id="feedback"
+                     class="feedback hidden">
+                </div>
+
+                <button
+                    id="nextBtn"
+                    class="primary-btn next-btn hidden"
+                    onclick="nextQuestion()">
+
+                    Siguiente →
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- ============================= -->
+        <!-- RESULTADOS -->
+        <!-- ============================= -->
+
+        <section id="detectiveScreen" class="screen">
+            <button class="back-btn" onclick="showSection('homeScreen')">← Salir</button>
+            <div id="detectiveContent"></div>
+        </section>
+
+        <section id="resultScreen" class="screen">
+
+            <div class="result-card">
+
+                <div class="result-icon" id="resultIcon">
+                    🏆
+                </div>
+
+                <span class="badge">RESULTADO FINAL</span>
+
+                <h2 id="resultTitle">
+                    ¡Excelente!
+                </h2>
+
+                <p id="resultMessage">
+                    Has terminado el reto.
+                </p>
+
+                <div class="result-score">
+
+                    <strong id="finalScore">
+                        0
+                    </strong>
+
+                    <span>
+                        puntos
+                    </span>
+
+                </div>
+
+                <div class="result-stats">
+
+                    <div>
+                        <strong id="correctAnswers">
+                            0
+                        </strong>
+                        <span>Correctas</span>
+                    </div>
+
+                    <div>
+                        <strong id="wrongAnswers">
+                            0
+                        </strong>
+                        <span>Incorrectas</span>
+                    </div>
+
+                    <div>
+                        <strong id="accuracy">
+                            0%
+                        </strong>
+                        <span>Precisión</span>
+                    </div>
+
+                </div>
+
+                <div class="result-actions">
+
+                    <button
+                        class="primary-btn"
+                        onclick="restartGame()">
+
+                        🔄 Jugar nuevamente
+
+                    </button>
+
+                    <button
+                        class="secondary-btn"
+                        onclick="showSection('homeScreen')">
+
+                        🏠 Menú principal
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- ============================= -->
+    <!-- FOOTER -->
+    <!-- ============================= -->
+
+    <footer>
+
+        <p>
+            ISO/IEC 25010 Challenge
+        </p>
+
+        <span>
+            Juego educativo para aprender calidad de software
+        </span>
+
+    </footer>
+
+
+    <script src="script.js"></script>
+    <script src="extras.js"></script>
+
+</body>
+</html>

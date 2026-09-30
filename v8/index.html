@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ISO 25010 Challenge v8 · Ruta QA Adaptativa</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ============================= -->
+  <!-- HEADER -->
+  <!-- ============================= -->
+  <header class="header">
+    <div class="logo" onclick="showSection('homeScreen')">
+      <div class="logo-icon">ISO</div>
+      <div>
+        <h1>ISO 25010</h1>
+          <span>Challenge · v8 Ruta QA</span>
+      </div>
+    </div>
+
+    <div class="header-right">
+      <div class="player-stats">
+        <div class="stat">
+          <span>⭐</span>
+          <strong id="score">0</strong>
+          <small>Pts</small>
+        </div>
+        <div class="stat">
+          <span>🔥</span>
+          <strong id="streak">0</strong>
+          <small>Racha</small>
+        </div>
+        <div class="stat">
+          <span>🏆</span>
+          <strong id="bestScore">0</strong>
+          <small>Récord</small>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <button class="icon-btn" onclick="toggleThemeQuick()" title="Modo Oscuro / Claro">🌓</button>
+        <button class="icon-btn" onclick="showSection('badgesScreen')" title="Mis Insignias">🎖️</button>
+        <button class="icon-btn" onclick="openSettingsModal()" title="Ajustes del Juego">⚙️</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============================= -->
+  <!-- CONTENEDOR PRINCIPAL -->
+  <!-- ============================= -->
+  <main class="container">
+
+    <!-- ============================= -->
+    <!-- 1. PANTALLA PRINCIPAL (HOME) -->
+    <!-- ============================= -->
+    <section id="homeScreen" class="screen active">
+
+      <div class="hero">
+        <div class="hero-content">
+          <span class="badge">EDICIÓN v8 · RUTA QA ADAPTATIVA</span>
+          <h2>Tu espacio para dominar <span>ISO/IEC 25010</span></h2>
+          <p>
+            Escribe cualquier palabra cotidiana y descubre al instante a qué característica y subcaracterística
+            pertenece. Con conceptos claros, reglas de oro y casos reales de software.
+          </p>
+          <div class="hero-actions">
+            <button class="primary-btn" onclick="startDiagnostic()">Hacer diagnóstico</button>
+            <button class="secondary-btn hero-secondary-btn" onclick="showSection('glossaryScreen'); SoundFX.navigate();">Buscar concepto</button>
+            <button class="text-action" onclick="showSection('learningLabScreen')">Mi ruta de aprendizaje</button>
+          </div>
+        </div>
+
+        <div class="hero-graphic">
+          <div class="iso-circle">
+            <span>ISO</span>
+            <strong>25010</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- Panel de progreso dinámico y repaso -->
+      <div id="progressPanel"></div>
+
+      <div class="learning-path-card">
+        <div><span class="eyebrow">TU SIGUIENTE PASO</span><h3 id="nextStepTitle">Comienza con el diagnóstico</h3><p id="nextStepText">10 preguntas para personalizar tu ruta de aprendizaje.</p></div>
+        <button class="primary-btn" onclick="startDiagnostic()">Empezar ahora</button>
+      </div>
+
+      <div class="home-section-heading">
+        <span>01 · RUTA DE APRENDIZAJE</span>
+        <h3>Elige tu siguiente desafío</h3>
+      </div>
+      <div class="mode-filters" role="tablist" aria-label="Filtrar modos de aprendizaje">
+        <button class="filter-btn active" onclick="filterModes('all', this)">Todos</button>
+        <button class="filter-btn" onclick="filterModes('learn', this)">Aprender</button>
+        <button class="filter-btn" onclick="filterModes('practice', this)">Practicar</button>
+        <button class="filter-btn" onclick="filterModes('evaluate', this)">Evaluar</button>
+        <button class="filter-btn" onclick="filterModes('progress', this)">Progreso</button>
+      </div>
+      <div class="mode-grid" id="modeGrid">
+
+        <div class="mode-card featured" onclick="showSection('modelScreen')">
+          <div class="mode-icon teal">📖</div>
+          <h3>¿Qué es la ISO 25010 y el Modelo?</h3>
+          <p>Descubre la norma sin enredos: la analogía de la inspección, las preguntas clave y la división del modelo.</p>
+          <button>Entender la Norma →</button>
+        </div>
+
+        <div class="mode-card" onclick="startDetective()">
+          <div class="mode-icon amber">🕵️</div>
+          <h3>Detective de Defectos</h3>
+          <p>Subraya evidencias, detecta dobles defectos y calcula la gravedad con matriz de impacto.</p>
+          <button>Investigar 28 Casos →</button>
+        </div>
+
+        <div class="mode-card" onclick="showSection('visualMapScreen')">
+          <div class="mode-icon teal">🗺️</div>
+          <h3>Mapa Visual Interactivo</h3>
+          <p>Esquema de las 8 características coloreadas por tu dominio personal y con analogías.</p>
+          <button>Explorar Mapa →</button>
+        </div>
+
+        <div class="mode-card" onclick="startMatchingGame()">
+          <div class="mode-icon purple">🧩</div>
+          <h3>Emparejar Conceptos</h3>
+          <p>Conecta subcaracterísticas con su característica o ejemplos reales con su atributo.</p>
+          <button>Emparejar →</button>
+        </div>
+
+        <div class="mode-card" onclick="startImageCases()">
+          <div class="mode-icon blue">📸</div>
+          <h3>Defectos en Pantalla</h3>
+          <p>Capturas de pantalla simuladas de banca, salud y comercio: toca la parte con el error.</p>
+          <button>Inspeccionar UI →</button>
+        </div>
+
+        <div class="mode-card" onclick="startBugReport()">
+          <div class="mode-icon red">📋</div>
+          <h3>Ficha de Reporte QA</h3>
+          <p>Redacta un ticket formal de defecto y compáralo con la solución de un Senior QA.</p>
+          <button>Redactar Reporte →</button>
+        </div>
+
+        <div class="mode-card featured" onclick="startCaseStudy()">
+          <div class="mode-icon red">🔬</div>
+          <h3>Casos de estudio QA</h3>
+          <p>Subraya evidencias reales y clasifica cada defecto según ISO/IEC 25010.</p>
+          <button>Analizar caso →</button>
+        </div>
+
+        <div class="mode-card" onclick="startGame('characteristic')">
+          <div class="mode-icon blue">🎯</div>
+          <h3>¿Qué característica es?</h3>
+          <p>Identifica la característica ISO 25010 a partir de una situación.</p>
+          <button>Jugar Quiz →</button>
+        </div>
+
+        <div class="mode-card" onclick="startGame('subcategory')">
+          <div class="mode-icon green">🔎</div>
+          <h3>¿Qué subcaracterística es?</h3>
+          <p>Descubre la subcaracterística exacta vulnerada.</p>
+          <button>Jugar Quiz →</button>
+        </div>
+
+        <div class="mode-card" onclick="startGame('cases')">
+          <div class="mode-icon orange">🏢</div>
+          <h3>Casos Prácticos</h3>
+          <p>Analiza situaciones de empresas, sistemas bancarios y hospitales.</p>
+          <button>Analizar Casos →</button>
+        </div>
+
+        <div class="mode-card" onclick="startGame('quick')">
+          <div class="mode-icon amber">⚡</div>
+          <h3>Reto Rápido</h3>
+          <p>Responde contrarreloj antes de que se agote el tiempo por pregunta.</p>
+          <button>Comenzar Reto →</button>
+        </div>
+
+        <div class="mode-card" onclick="startGame('exam')">
+          <div class="mode-icon red">📝</div>
+          <h3>Examen de Certificación</h3>
+          <p>Demuestra todo lo que aprendiste en un examen completo de 15 preguntas.</p>
+          <button>Rendir Examen →</button>
+        </div>
+
+        <div class="mode-card" onclick="showSection('badgesScreen')">
+          <div class="mode-icon purple">🎖️</div>
+          <h3>Insignias y Logros</h3>
+          <p>Consulta tus medallas desbloqueadas y tu nivel de auditor QA.</p>
+          <button>Ver Galería →</button>
+        </div>
+
+        <div class="mode-card" onclick="showSection('certificateScreen')">
+          <div class="mode-icon green">📜</div>
+          <h3>Certificado de Auditor</h3>
+          <p>Genera tu diploma formal con tus porcentajes de dominio para imprimir o descargar en PDF.</p>
+          <button>Obtener Diploma →</button>
+        </div>
+
+      </div>
+
+      <div class="home-section-heading"><span>02 · APRENDIZAJE PROFUNDO</span><h3>Aprende a trabajar como QA</h3></div>
+      <div class="learning-tools-grid">
+        <button class="learning-tool tool-compare" onclick="showSection('learningLabScreen'); setLabView('compare')"><i>◈</i><em>CONCEPTOS</em><b>Comparador</b><span>Diferencia atributos que suelen confundirse.</span><small>Explorar laboratorio</small></button>
+        <button class="learning-tool tool-audit" onclick="showSection('learningLabScreen'); setLabView('audit')"><i>✓</i><em>HALLAZGOS</em><b>Auditoría QA</b><span>Analiza requisito, evidencia, impacto y severidad.</span><small>Resolver caso</small></button>
+        <button class="learning-tool tool-trace" onclick="showSection('learningLabScreen'); setLabView('trace')"><i>↔</i><em>EVIDENCIA</em><b>Trazabilidad</b><span>Conecta requisito, prueba, defecto y atributo ISO.</span><small>Completar matriz</small></button>
+        <button class="learning-tool tool-metrics" onclick="showSection('learningLabScreen'); setLabView('metrics')"><i>▥</i><em>MÉTRICAS</em><b>Medición práctica</b><span>Aprende qué medir y cómo interpretar resultados.</span><small>Usar calculadora</small></button>
+      </div>
+
+    </section>
+
+    <section id="learningLabScreen" class="screen"><div id="learningLabContent"></div></section>
+    <section id="caseStudyScreen" class="screen"><div id="caseStudyContent"></div></section>
+
+    <!-- ============================= -->
+    <!-- 2. APRENDER (LISTA DE CARACTERÍSTICAS) -->
+    <!-- ============================= -->
+    <section id="learnScreen" class="screen">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:16px;">
+        <button class="back-btn" style="margin:0;" onclick="showSection('homeScreen')">← Volver al Menú</button>
+        <button class="secondary-btn sm-btn" onclick="showSection('modelScreen')">📖 Ver Estructura del Modelo ISO</button>
+      </div>
+
+      <div class="section-header">
+        <span class="badge">📚 MODELO DE CALIDAD</span>
+        <h2>Las 8 Características <span>ISO/IEC 25010</span></h2>
+        <p>Selecciona una característica para conocer sus fundamentos sin tecnicismos, su analogía y su pregunta clave.</p>
+      </div>
+
+      <div id="characteristicsGrid" class="characteristics-grid"></div>
+    </section>
+
+    <!-- ============================= -->
+    <!-- 3. DETALLE DE CARACTERÍSTICA -->
+    <!-- ============================= -->
+    <section id="detailScreen" class="screen">
+      <button class="back-btn" onclick="showSection('learnScreen')">← Volver a características</button>
+      <div id="detailContent"></div>
+    </section>
+
+    <!-- ============================= -->
+    <!-- 3.1 GUÍA DEL MODELO ISO 25010 -->
+    <!-- ============================= -->
+    <section id="modelScreen" class="screen">
+      <div id="modelContent"></div>
+    </section>
+
+    <!-- ============================= -->
+    <!-- 4. MAPA VISUAL INTERACTIVO -->
+    <!-- ============================= -->
+    <section id="visualMapScreen" class="screen">
+      <div class="section-header" style="margin-bottom:20px;">
+        <span class="badge">🗺️ ESQUEMA GLOBAL</span>
+        <h2>Mapa Visual <span>ISO/IEC 25010</span></h2>
+        <p>Vista general de las 8 características y 31 subcaracterísticas, coloreadas según tu nivel de dominio.</p>
+      </div>
+      <div id="visualMapContainer"></div>
+    </section>
+
+    <!-- ============================= -->
+    <!-- 5. EMPAREJAR (MATCHING) -->
+    <!-- ============================= -->
+    <section id="matchScreen" class="screen">
+      <div id="matchContent"></div>
+    </section>
+
+    <!-- ============================= -->
+    <!-- 6. DETECTIVE DE DEFECTOS -->
+    <!-- ============================= -->
+    <section id="detectiveScreen" class="screen">
+      <button class="back-btn" onclick="showSection('homeScreen')">← Salir de la Investigación</button>
+      <div id="detectiveContent"></div>
+    </section>
+
+    <!-- ============================= -->
+    <!-- 7. DEFECTOS EN PANTALLA (CASOS CON IMAGEN) -->
+    <!-- ============================= -->
+    <section id="imageBugScreen" class="screen">
+      <div id="imageBugContent"></div>
+    </section>
+
+    <!-- ============================= -->
+    <!-- 8. FICHA DE REPORTE DE DEFECTO -->
+    <!-- ============================= -->
+    <section id="bugReportScreen" class="screen">
+      <div id="bugReportContent"></div>
+    </section>
+
+    <!-- ============================= -->
+    <!-- 9. INSIGNIAS Y LOGROS -->
+    <!-- ============================= -->
+    <section id="badgesScreen" class="screen">
+      <div id="badgesContent"></div>
+    </section>
+
+    <!-- ============================= -->
+    <!-- 10. CERTIFICADO IMPRIMIBLE -->
+    <!-- ============================= -->
+    <section id="certificateScreen" class="screen">
+      <div id="certificateContent"></div>
+    </section>
+
+    <!-- ============================= -->
+    <!-- 11. PANTALLA DE JUEGO (QUIZ) -->
+    <!-- ============================= -->
+    <section id="gameScreen" class="screen">
+      <div class="game-top">
+        <button class="back-btn" onclick="confirmExit()">← Salir</button>
+        <div class="game-info">
+          <span id="questionCounter">Pregunta 1 / 10</span>
+          <div class="lives" id="lives">❤️ ❤️ ❤️</div>
+        </div>
+      </div>
+
+      <div class="progress-container">
+        <div id="progressBar" class="progress-bar"></div>
+      </div>
+
+      <div id="timerBox" class="timer-box hidden">
+        ⏱️ <span id="timer">20</span>s
+      </div>
+
+      <div class="question-card">
+        <div class="question-type" id="questionType">PREGUNTA</div>
+        <h2 id="questionText">Pregunta</h2>
+        <div id="questionDescription" class="question-description"></div>
+        <div id="answers" class="answers"></div>
+        <div id="feedback" class="feedback hidden"></div>
+        <button id="nextBtn" class="primary-btn next-btn hidden" onclick="nextQuestion()">Siguiente →</button>
+      </div>
+    </section>
+
+    <!-- ============================= -->
+    <!-- 12. PANTALLA DE RESULTADOS -->
+    <!-- ============================= -->
+    <section id="resultScreen" class="screen">
+      <div class="result-card">
+        <div class="result-icon" id="resultIcon">🏆</div>
+        <span class="badge">RESULTADO FINAL</span>
+        <h2 id="resultTitle">¡Excelente!</h2>
+        <p id="resultMessage">Has completado el desafío.</p>
+
+        <div class="result-score">
+          <strong id="finalScore">0</strong>
+          <span>puntos</span>
+        </div>
+
+        <div class="result-stats">
+          <div><strong id="correctAnswers">0</strong><span>Correctas</span></div>
+          <div><strong id="wrongAnswers">0</strong><span>Incorrectas</span></div>
+          <div><strong id="accuracy">0%</strong><span>Precisión</span></div>
+        </div>
+
+        <div class="result-actions">
+          <button class="primary-btn" onclick="restartGame()">🔄 Jugar nuevamente</button>
+          <button class="secondary-btn" onclick="showSection('homeScreen')">🏠 Menú principal</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================= -->
+    <!-- 13. BUSCADOR INTELIGENTE / GLOSARIO DE BOLSILLO -->
+    <!-- ============================= -->
+    <section id="glossaryScreen" class="screen">
+      <div id="glossaryContent"></div>
+    </section>
+
+  </main>
+
+  <!-- ============================= -->
+  <!-- NUEVA: PANTALLA BUSCADOR / GLOSARIO DE BOLSILLO -->
+  <!-- ============================= -->
+  <!-- NOTA: Esta pantalla está FUERA del <main> para poder tener su propio scroll y layout full-width -->
+  <!-- Mejor dentro del main: movemos arriba antes de </main> -->
+
+  <!-- ============================= -->
+  <!-- MODAL DE AJUSTES -->
+  <!-- ============================= -->
+  <div id="settingsModal" class="modal-overlay hidden" onclick="closeSettingsModal()">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeSettingsModal()">✕</button>
+      <div class="modal-header">
+        <span class="modal-icon">⚙️</span>
+        <div>
+          <h2>Ajustes del Juego</h2>
+          <small>Personaliza tu experiencia de aprendizaje</small>
+        </div>
+      </div>
+
+      <div style="margin-top:20px;">
+        <div class="form-group">
+          <label for="setPlayerName">Nombre del estudiante (aparece en tu certificado):</label>
+          <input type="text" id="setPlayerName" placeholder="Tu nombre y apellidos">
+        </div>
+
+        <div class="form-group">
+          <label for="setDifficulty">Nivel de dificultad:</label>
+          <select id="setDifficulty">
+            <option value="facil">🟢 Fácil (4 vidas, pistas activadas, 30s de tiempo)</option>
+            <option value="normal" selected>🟡 Normal (3 vidas, tiempo estándar 20s)</option>
+            <option value="dificil">🔴 Difícil (1 vida, sin pistas, 12s de tiempo)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="setTheme">Tema visual:</label>
+          <select id="setTheme">
+            <option value="light">☀️ Modo Claro</option>
+            <option value="dark">🌙 Modo Oscuro</option>
+          </select>
+        </div>
+
+        <div class="form-group" style="display:flex; align-items:center; gap:10px;">
+          <input type="checkbox" id="setSound" style="width:20px; height:20px;">
+          <label for="setSound" style="margin:0; cursor:pointer;">🔊 Efectos de sonido activados (Web Audio API)</label>
+        </div>
+
+        <div style="display:flex; gap:10px; margin-top:24px;">
+          <button class="primary-btn" style="flex-grow:1; justify-content:center;" onclick="saveSettingsModal()">Guardar Ajustes</button>
+          <button class="secondary-btn" onclick="closeSettingsModal()">Cancelar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================= -->
+  <!-- FOOTER -->
+  <!-- ============================= -->
+  <footer>
+    <p>ISO/IEC 25010 Challenge · Versión 8 · Ruta QA Adaptativa</p>
+    <span>Plataforma interactiva para la enseñanza y dominio de la calidad del producto software</span>
+  </footer>
+
+  <!-- ============================= -->
+  <!-- SCRIPTS EN ORDEN DE CARGA -->
+  <!-- ============================= -->
+  <script src="data.js"></script>
+  <script src="store.js"></script>
+  <script src="audio.js"></script>
+  <script src="glossary.js"></script>
+  <script src="detective.js"></script>
+  <script src="map-match.js"></script>
+  <script src="image-cases.js"></script>
+  <script src="bug-report.js"></script>
+  <script src="badges-cert.js"></script>
+  <script src="learning-tools.js"></script>
+  <script src="case-study.js"></script>
+  <script src="script.js"></script>
+
+</body>
+</html>
